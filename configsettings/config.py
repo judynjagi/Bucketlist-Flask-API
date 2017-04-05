@@ -23,7 +23,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     """ Test configurations """
 
-    DEBUG = True
+    DEBUG = False
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "test.db")
 

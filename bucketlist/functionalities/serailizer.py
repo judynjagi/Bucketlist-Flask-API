@@ -21,4 +21,9 @@ bucketlist_serializer = {
     "date_modified": fields.DateTime
 }
 
+user_serializer = {
+    "id": fields.Integer,
+    "username": fields.String
+}
+
 

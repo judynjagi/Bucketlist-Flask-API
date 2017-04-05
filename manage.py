@@ -24,7 +24,6 @@ manager.add_command('db', MigrateCommand)
 @manager.command
 def createdb(default_data=True, sample_data=False):
 	db.create_all()
-	# create_tables(app)
 	print("Initialized the database")
 
 @manager.command
@@ -42,7 +41,6 @@ def test():
         return 0
     else:
         return 1
-
 
 @manager.command
 def cov():

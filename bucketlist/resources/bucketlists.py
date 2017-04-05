@@ -10,7 +10,8 @@ from bucketlist.functionalities.permissions import auth
 class BucketListAPI(Resource):
 	decorators = [auth.login_required]
 	def get(self, id):
-		"""Get a single bucket list selected by item_id
+		"""
+		Get a single bucket list selected by list_id
 		"""
 		bucket_list = BucketList.query.filter_by(list_id = id, \
 			created_by = g.user.user_id).first()
@@ -22,6 +23,9 @@ class BucketListAPI(Resource):
 			return {'message': 'Error! Could not find the Bucketlist with ID:%s' %id}, 404
 
 	def delete(self, id):
+		"""
+		Delete a single bucket list selected by list_id
+		"""
 		bucket_list = BucketList.query.filter_by(list_id=id, \
 			created_by = g.user.user_id).first()
 		if bucket_list is not None:
@@ -44,10 +48,11 @@ class BucketListsAPI(Resource):
 			all_bucket_lists = BucketList.query.filter_by(created_by = g.user.user_id).all()
 			bucket_list = BucketList.query.filter_by(list_title=search_name,\
 			 created_by = g.user.user_id).first()
+			response = marshal(all_bucket_lists, bucketlist_serializer)
 			if bucket_list is not None:
 				return marshal(bucket_list, bucketlist_serializer)
 
-			return {"message": "The Bucketlist" + ", " +  search_name + ", " + "was not found", "try this instead": marshal(all_bucket_lists, bucketlist_serializer)}
+			return {"message": "The Bucketlist" + ", " +  search_name + ", " + "was not found", "try this instead": response}
 
 		bucket_lists = BucketList.query.filter_by(created_by = g.user.user_id)\
 		.paginate(page=offset, per_page=limit, error_out=False)
@@ -70,7 +75,7 @@ class BucketListsAPI(Resource):
 
 		bucket_lists = bucket_lists.items
 
-		result = {"bucketl_ists": marshal(bucket_lists, bucketlist_serializer),
+		result = {"bucket_lists": marshal(bucket_lists, bucketlist_serializer),
 				  "has_next": has_next,
 				  "total_pages": pages,
 				  "previous_page": previous_page,
@@ -79,9 +84,12 @@ class BucketListsAPI(Resource):
 		if bucket_lists:
 			return result
 		else:
-			return "Error"
+			return "Error! Couldn't find any bucketlists"
 
 	def post(self):
+		"""
+		Create a Bucketlist
+		"""
 		parser = reqparse.RequestParser()
 		parser.add_argument('title', type=str, \
 			required=True, help= 'Provide a BucketList name')
@@ -92,16 +100,20 @@ class BucketListsAPI(Resource):
 		existing_bucketlist = BucketList.query.filter_by(list_title=title, \
 			created_by=g.user.user_id).all()
 		if existing_bucketlist:
-			return {'message': 'Bucketlist already exits'}
+			return {'message': 'Bucketlist already exits'}, 400
 		else:
 			new_bucketlist = BucketList(list_title = title, \
 				list_description=description, created_by=g.user.user_id)
 			db.session.add(new_bucketlist)
 			db.session.commit()
-			return {"new_bucketlist": marshal(new_bucketlist, bucketlist_serializer)}
+			response = marshal(new_bucketlist, bucketlist_serializer)
+			return {"new_bucketlist": response, "message": "You have successfully created a bucketlist"}, 201
 			
 
 class BucketListsPutAPI(Resource):
+	"""
+	Update a Bucketlist
+	"""
 	decorators = [auth.login_required]
 	def put(self, id):
 		bucket_list = BucketList.query.filter_by(list_id=id, \
@@ -127,5 +139,6 @@ class BucketListsPutAPI(Resource):
 		db.session.commit()
 
 		if bucket_list is not None:
-			return {"bucket_list": marshal(bucket_list, bucketlist_serializer)}, 200
+			response = marshal(bucket_list, bucketlist_serializer)
+			return {"bucket_list": response, "message": "Bucketlist updated"}, 200
 

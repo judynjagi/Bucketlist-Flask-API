@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from flask_migrate import Migrate
-from passlib.apps import custom_app_context as pwd_context
+from werkzeug.security import generate_password_hash, \
+     check_password_hash
 from itsdangerous import (TimedJSONWebSignatureSerializer
 						  as Serializer, BadSignature, SignatureExpired)
 from sqlalchemy.orm import validates
@@ -9,6 +10,9 @@ from sqlalchemy.orm import validates
 from bucketlist import app, db
 
 class Users(db.Model):
+	"""
+	Users Model
+	"""
 	__tablename__ = 'users'
 
 	user_id = db.Column(db.Integer, primary_key=True)
@@ -16,13 +20,12 @@ class Users(db.Model):
 	password_hash = db.Column(db.String(64), nullable=False)
 	email= db.Column(db.String(250), nullable=False, unique=True)
 
-
 	def hash_password(self, password):
-		self.password_hash = pwd_context.encrypt(password)
-		self.verify_password_hash = pwd_context.encrypt(password)
+		self.password_hash = generate_password_hash(password)
 
 	def verify_password(self, password):
-		return pwd_context.verify(password, self.password_hash)
+		return check_password_hash(self.password_hash, password)
+
 
 	def generate_auth_token(self, expiration=36000):
 		"""Expires in 36 minutes"""
@@ -51,7 +54,7 @@ class Users(db.Model):
 
 class BucketList(db.Model):
 
-	"""docstring for ClassName"""
+	"""Bucketlist model"""
 	__tablename__ = 'bucketlist'
 
 	list_id = db.Column(db.Integer, primary_key=True)
@@ -69,7 +72,7 @@ class BucketList(db.Model):
 
 class BucketlistItem(db.Model):
 	"""
-	BucketlistItem
+	BucketlistItem model
 	"""
 	__tablename__ = 'items'
 

@@ -9,6 +9,9 @@ from bucketlist.functionalities.permissions import auth
 class BucketListItems(Resource):
 	decorators = [auth.login_required]
 	def post(self, id):
+		"""
+		Endpoint to create a bucketlist item
+		"""
 		bucket_list = BucketList.query.filter_by(list_id=id,\
 		 created_by=g.user.user_id).first()
 
@@ -26,10 +29,14 @@ class BucketListItems(Resource):
 			db.session.commit()
 			items = marshal(bucketlistitems, bucketlist_item_serializer)
 
-			return {'message': 'You have successfully created a bucketlist item', 'bucketlistitems': items}
+			return {'message': 'You have successfully created a bucketlist item', 'bucketlistitems': items}, 200
 		return {'message': 'That list was not found'}, 404
 
 	def put(self, id, item_id):
+		"""
+		Endpoint to update a bucketlist item
+		"""
+
 		bucketlistitem = BucketlistItem.query.filter_by(created_by=g.user.user_id, item_id=item_id, bucketlist_id=id).first()
 
 		if bucketlistitem is None:
@@ -65,15 +72,18 @@ class BucketListItems(Resource):
 			db.session.commit()
 			response = marshal(bucketlistitem, bucketlist_item_serializer)
 
-			return {"bucket_list": response}, 200
+			return {"bucket_list": response, "message": "Successfully updated a bucketlistitem"}, 200
 
 
 	def delete(self, id, item_id):
+		"""
+		Endpoint to delete a bucketlist item by its id
+		"""
 		bucketlistitem = BucketlistItem.query.filter_by(created_by=g.user.user_id, \
 			item_id=item_id, bucketlist_id=id).first()
 		if bucketlistitem is not None:
 			db.session.delete(bucketlistitem)
 			db.session.commit()
-			return {"message": "You have successfully deleted bucketlist with ID"}, 200
+			return {"message": "You have successfully deleted bucketlist with ID:%s" %item_id}, 200
 		return {'message': 'Bucketlist not found'}, 404
 

@@ -8,6 +8,9 @@ from bucketlist.functionalities.permissions import unauthorized
 
 class Register(Resource):
 	def post(self):
+		"""
+		Register a user
+		"""
 		parser = reqparse.RequestParser()
 		parser.add_argument('username', type=str, \
 			required= True, help= 'Provide a username')
@@ -20,16 +23,17 @@ class Register(Resource):
 		args = parser.parse_args(strict=True)
 
 		username, email, password, verify_password = args.username, args.email, args.password, args.verify_password
+
 		try:
 			new_user = Users(username = username, \
-				email = email, password_hash = password, )
+				email = email, password_hash = password)
 			new_user.hash_password(password)
 			new_user.hash_password(verify_password)
 			if password == verify_password:
 				db.session.add(new_user)
 				db.session.commit()
 				return {'message': 'User successfully created', 'Username': '%s.' %username, 'email address': ' %s ' %email}, 200
-			return {'message': 'Sorry! Passwords do not match'}
+			return {'message': 'Sorry! Passwords do not match'}, 401
 
 		except (IntegrityError, AssertionError):
 			db.session.rollback()
@@ -37,11 +41,14 @@ class Register(Resource):
 
 class Login(Resource):
 	def post(self):
+		"""
+		Endpoint to log in a user
+		"""
 		parser = reqparse.RequestParser()
 		parser.add_argument('username', type=str, required= True, \
-			help= 'Provide a username', location='json')
+			help= 'Provide a username')
 		parser.add_argument('password', type=str, required= True, \
-			help= 'This is a required field', location='json')
+			help= 'This is a required field')
 		args = parser.parse_args(strict=True)
 		username, password = args['username'], args['password']
 
@@ -50,13 +57,18 @@ class Login(Resource):
 			user = Users.query.filter_by(username=username).first()
 		else:
 			return {'message': 'A username and password must be provided'}
+		# import pdb; pdb.set_trace()
 
 		# Authenticate with username and password
 		if user and user.verify_password(password):
 			token = user.generate_auth_token(36000)
-			return {'message': 'Successfully logged in. This is your  token', 'token': token.decode('ascii'), 'duration': 36000}
+			return {'message': 'Successfully logged in. This is your  token', 'token': token.decode('ascii'), 'duration': 36000}, 200
+
 		else:
 			return unauthorized("Incorrect username or password.")
+
+
+
 
 
 

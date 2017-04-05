@@ -15,7 +15,7 @@ api.add_resource(BucketListsAPI, '/bucketlists/', endpoint = 'Bucketlists')
 api.add_resource(BucketListsPutAPI, '/bucketlists/<int:id>', endpoint = 'Bucketlistsupdate')
 
 api.add_resource(BucketListItems, '/bucketlists/<int:id>/items/', endpoint = 'BucketlistItems')
-api.add_resource(BucketListItems, '/bucketlists/<int:id>/items/<int:item_id>', endpoint = 'items')
+api.add_resource(BucketListItems, '/bucketlists/<int:id>/items/<int:item_id>', endpoint = 'updateitems')
 api.add_resource(BucketListItems, '/bucketlists/<int:id>/items/<int:item_id>', endpoint = 'deleteitems')
 
 if __name__ == "__main__":
