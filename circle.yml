@@ -1,0 +1,14 @@
+machine:
+  python:
+    version: 3.6.0
+
+dependencies:
+  override:
+    - pip install -r requirements.txt
+    - pip install coveralls
+
+test:
+  override:
+    - coverage run --omit=*/tests/* --source=bucketlist ./manage.py db cov --no-input
+  post:
+    - coveralls
