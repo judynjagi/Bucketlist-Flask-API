@@ -13,12 +13,11 @@ class BucketListAPI(Resource):
 		"""
 		Get a single bucket list selected by list_id
 		"""
-		bucket_list = BucketList.query.filter_by(list_id = id, \
+		bucket_list = BucketList.query.filter_by(list_id = id,
 			created_by = g.user.user_id).first()
 		if bucket_list:
 			listrequested = marshal(bucket_list, bucketlist_serializer)
-			return {"listrequested": listrequested, \
-			'message': 'The bucket list requested is ID: %s' %id}, 200
+			return {"listrequested": listrequested, 'message': 'The bucket list requested is ID: %s' %id}, 200
 		else:
 			return {'message': 'Error! Could not find the Bucketlist with ID:%s' %id}, 404
 
@@ -26,13 +25,48 @@ class BucketListAPI(Resource):
 		"""
 		Delete a single bucket list selected by list_id
 		"""
-		bucket_list = BucketList.query.filter_by(list_id=id, \
+		bucket_list = BucketList.query.filter_by(list_id=id,
 			created_by = g.user.user_id).first()
 		if bucket_list is not None:
 			db.session.delete(bucket_list)
 			db.session.commit()
 			return {"message": "You have successfully deleted bucketlist with ID:%s" %id}, 200
 		return {'message': 'Bucketlist not found'}, 404
+
+	def put(self, id):
+		"""
+		Update a Bucketlist
+		"""
+
+		bucket_list = BucketList.query.filter_by(list_id=id,
+			created_by=g.user.user_id).first()
+		if bucket_list is None:
+			return {'message': 'Bucketlist not found'}, 404
+
+		parser = reqparse.RequestParser()
+		parser.add_argument('title',
+			type=str,
+			required=True,
+			help='Provide a Bucketlist item')
+		parser.add_argument('description', type=str)
+		args = parser.parse_args(strict=True)
+
+		
+		title, description = args['title'], args['description']
+
+		if title:
+			bucket_list.list_title = title
+
+		if description:
+			bucket_list.list_description = description
+
+		db.session.commit()
+
+		if bucket_list is not None:
+			response = marshal(bucket_list, bucketlist_serializer)
+			return {"bucket_list": response, "message": "Bucketlist updated"}, 200
+
+
 
 class BucketListsAPI(Resource):
 	decorators = [auth.login_required]
@@ -46,8 +80,8 @@ class BucketListsAPI(Resource):
 
 		if search_name:
 			all_bucket_lists = BucketList.query.filter_by(created_by = g.user.user_id).all()
-			bucket_list = BucketList.query.filter_by(list_title=search_name,\
-			 created_by = g.user.user_id).first()
+			bucket_list = BucketList.query.filter_by(list_title=search_name,
+				created_by = g.user.user_id).first()
 			response = marshal(all_bucket_lists, bucketlist_serializer)
 			if bucket_list is not None:
 				return marshal(bucket_list, bucketlist_serializer)
@@ -91,13 +125,14 @@ class BucketListsAPI(Resource):
 		Create a Bucketlist
 		"""
 		parser = reqparse.RequestParser()
-		parser.add_argument('title', type=str, \
-			required=True, help= 'Provide a BucketList name')
+		parser.add_argument('title', type=str,
+			required=True,
+			help= 'Provide a BucketList name')
 		parser.add_argument('description', type=str)
 		args = parser.parse_args(strict=True)
 		title, description = args['title'], args['description']
 
-		existing_bucketlist = BucketList.query.filter_by(list_title=title, \
+		existing_bucketlist = BucketList.query.filter_by(list_title=title,
 			created_by=g.user.user_id).all()
 		if existing_bucketlist:
 			return {'message': 'Bucketlist already exits'}, 400
@@ -108,37 +143,5 @@ class BucketListsAPI(Resource):
 			db.session.commit()
 			response = marshal(new_bucketlist, bucketlist_serializer)
 			return {"new_bucketlist": response, "message": "You have successfully created a bucketlist"}, 201
-			
 
-class BucketListsPutAPI(Resource):
-	"""
-	Update a Bucketlist
-	"""
-	decorators = [auth.login_required]
-	def put(self, id):
-		bucket_list = BucketList.query.filter_by(list_id=id, \
-			created_by=g.user.user_id).first()
-		if bucket_list is None:
-			return {'message': 'Bucketlist not found'}, 404
-
-		parser = reqparse.RequestParser()
-		parser.add_argument('title', type=str, required=True, \
-			help='Provide a Bucketlist item')
-		parser.add_argument('description', type=str)
-		args = parser.parse_args(strict=True)
-
-		
-		title, description = args['title'], args['description']
-
-		if title:
-			bucket_list.list_title = title
-
-		if description:
-			bucket_list.list_description = description
-
-		db.session.commit()
-
-		if bucket_list is not None:
-			response = marshal(bucket_list, bucketlist_serializer)
-			return {"bucket_list": response, "message": "Bucketlist updated"}, 200
-
+	

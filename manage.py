@@ -13,7 +13,10 @@ from bucketlist.resources.models import db
 COV = coverage.coverage(
         branch=True,
         include='bucketlist/*',
-        omit=['*/__init__.py', '*/config/*']
+        omit=['*/__init__.py',
+        '*/config/*',
+        'bucketlist/resources/models.py'
+        ]
     )
 COV.start()
 
@@ -46,7 +49,7 @@ def test():
 def cov():
     """Runs the unit tests with coverage."""
     tests = unittest.TestLoader().discover('tests')
-    unittest.TextTestRunner(verbosity=2).run(tests)
+    unittest.TextTestRunner(verbosity=1).run(tests)
     COV.stop()
     COV.save()
     print('Coverage Summary:')

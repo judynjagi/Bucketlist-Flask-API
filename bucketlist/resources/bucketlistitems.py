@@ -12,19 +12,23 @@ class BucketListItems(Resource):
 		"""
 		Endpoint to create a bucketlist item
 		"""
-		bucket_list = BucketList.query.filter_by(list_id=id,\
-		 created_by=g.user.user_id).first()
+		bucket_list = BucketList.query.filter_by(list_id=id,
+			created_by=g.user.user_id).first()
 
 		if bucket_list:
 			parser = reqparse.RequestParser()
-			parser.add_argument('item_name', type=str, \
-				required=True, help='Provide a bucketlist item')
+			parser.add_argument('item_name', type=str,
+				required=True,
+				help='Provide a bucketlist item'
+			)
 			parser.add_argument('description', type=str)
 			args = parser.parse_args(strict=True)
 			name, description = args['item_name'], args['description']
 
-			bucketlistitems = BucketlistItem(item_title=name, item_description=description, \
-				bucketlist_id=id, created_by=g.user.user_id, done=False)
+			bucketlistitems = BucketlistItem(item_title=name, item_description=description,
+				bucketlist_id=id,
+				created_by=g.user.user_id,
+				done=False)
 			db.session.add(bucketlistitems)
 			db.session.commit()
 			items = marshal(bucketlistitems, bucketlist_item_serializer)
@@ -45,12 +49,13 @@ class BucketListItems(Resource):
 		else:
 		
 			parser = reqparse.RequestParser()
-			parser.add_argument('item_name', type=str, \
-				required=True, help='Provide a bucketlist item')
+			parser.add_argument('item_name', type=str,
+				required=True,
+				help='Provide a bucketlist item'
+			)
 			parser.add_argument('description', type=str)
-			parser.add_argument('done', type=str, required=True, \
-				help='This field takes True of False fields depending on \
-				whether you have already done it yet or not ')
+			parser.add_argument('done', type=str, required=True,
+				help='This field takes a True of False value depending on whether you have accomplished it or not ')
 
 			args = parser.parse_args(strict=True)
 			done, name, description = args['done'], args['item_name'], args['description']
@@ -63,8 +68,10 @@ class BucketListItems(Resource):
 
 			if done == 'True' or done == 'true':
 				bucketlistitem.done = True
+
 			elif done == 'False' or done == 'false':
 				bucketlistitem.done = False
+			# import pdb; pdb.set_trace()
 
 			bucketlistitem.bucketlist_id = id
 			bucketlistitem.item_id = item_id
@@ -79,8 +86,9 @@ class BucketListItems(Resource):
 		"""
 		Endpoint to delete a bucketlist item by its id
 		"""
-		bucketlistitem = BucketlistItem.query.filter_by(created_by=g.user.user_id, \
-			item_id=item_id, bucketlist_id=id).first()
+		bucketlistitem = BucketlistItem.query.filter_by(created_by=g.user.user_id,
+			item_id=item_id,
+			bucketlist_id=id).first()
 		if bucketlistitem is not None:
 			db.session.delete(bucketlistitem)
 			db.session.commit()

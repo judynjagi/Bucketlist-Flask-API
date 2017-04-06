@@ -12,21 +12,30 @@ class Register(Resource):
 		Register a user
 		"""
 		parser = reqparse.RequestParser()
-		parser.add_argument('username', type=str, \
-			required= True, help= 'Provide a username')
-		parser.add_argument('email', type=str, \
-			required= True, help= 'You must provide a valid email address')
-		parser.add_argument('password', type=str, \
-			required= True, help= 'This is a required field')
-		parser.add_argument('verify_password', type=str, \
-			required= True, help= 'This is a required field')
+		parser.add_argument('username',
+			type=str,
+			required= True,
+			help= 'Provide a username')
+		parser.add_argument('email',
+			type=str,
+			required= True,
+			help= 'You must provide a valid email address')
+		parser.add_argument('password',
+			type=str,
+			required= True,
+			help= 'This is a required field')
+		parser.add_argument('verify_password',
+			type=str,
+			required= True,
+			help= 'This is a required field')
 		args = parser.parse_args(strict=True)
 
 		username, email, password, verify_password = args.username, args.email, args.password, args.verify_password
 
 		try:
-			new_user = Users(username = username, \
-				email = email, password_hash = password)
+			new_user = Users(username = username,
+				email = email,
+				password_hash = password)
 			new_user.hash_password(password)
 			new_user.hash_password(verify_password)
 			if password == verify_password:
@@ -45,9 +54,13 @@ class Login(Resource):
 		Endpoint to log in a user
 		"""
 		parser = reqparse.RequestParser()
-		parser.add_argument('username', type=str, required= True, \
+		parser.add_argument('username',
+			type=str,
+			required= True,
 			help= 'Provide a username')
-		parser.add_argument('password', type=str, required= True, \
+		parser.add_argument('password',
+			type=str,
+			required= True,
 			help= 'This is a required field')
 		args = parser.parse_args(strict=True)
 		username, password = args['username'], args['password']
