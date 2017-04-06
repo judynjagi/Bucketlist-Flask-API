@@ -3,7 +3,7 @@ import json
 import unittest 
 from tests.test_base import BaseTestCase
 
-class TestAuth(BaseTestCase):
+class TestBucketList(BaseTestCase):
 	# Ensure that cannot create a bucketlist without authorization
 	def test_cannot_post_bucketlist_without_token(self):
 		self.bucketlist = {"title" : 'Going to the moon',
@@ -17,7 +17,7 @@ class TestAuth(BaseTestCase):
 
 		output = json.loads(response.data)
 		self.assertTrue("Error: You are not authorized to access this resource." in output['message'])
-		self.assertTrue(response.status_code, 403)
+		self.assertTrue(response.status_code, 401)
 
 	# Use token authorization and create a bucketlist
 	def test_post_bucketlist(self):
@@ -91,10 +91,13 @@ class TestAuth(BaseTestCase):
 		response = self.client.get('/bucketlists/',
 			headers={'Authorization': 'Token ' + self.token}
 		)
-		output = json.loads(response.data)["bucket_lists"][0]
-		bucketlist = output.get('list_title')
+		output = json.loads(response.data)["bucket_lists"]
+		bucketlist1 = output[0]
+		bucketlist = bucketlist1.get('list_title')
+		# import pdb; pdb.set_trace()
 
 		self.assertEqual(bucketlist, 'Going to the moon')
+		self.assertTrue(len(output)==2)
 
 	# Test delete single bucketlist
 	def test_delete_single_bucketlists(self):
@@ -107,7 +110,7 @@ class TestAuth(BaseTestCase):
 		self.assertTrue(response.status_code, 200)
 
 	# Test delete single bucketlist when it doesn't exist
-	def test_bucketlists_that_doesnt_exist(self):
+	def test_delete_nonexistent_bucketlist(self):
 		response = self.client.delete('/bucketlists/4',
 			headers={'Authorization': 'Token ' + self.token}
 		)

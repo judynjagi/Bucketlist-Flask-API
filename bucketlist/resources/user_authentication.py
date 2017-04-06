@@ -33,7 +33,7 @@ class Register(Resource):
 				db.session.add(new_user)
 				db.session.commit()
 				return {'message': 'User successfully created', 'Username': '%s.' %username, 'email address': ' %s ' %email}, 200
-			return {'message': 'Sorry! Passwords do not match'}, 401
+			return {'message': 'Sorry! Passwords do not match'}, 400
 
 		except (IntegrityError, AssertionError):
 			db.session.rollback()

@@ -11,7 +11,7 @@ def unauthorized(message=None):
 	"""
 	if not message:
 		message = "Error: You are not authorized to access this resource."
-	return jsonify({ "message": message }), 403
+	return jsonify({ "message": message }), 401
 
 @auth.verify_token
 def verify_token(token):

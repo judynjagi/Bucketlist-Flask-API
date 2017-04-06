@@ -3,7 +3,7 @@ import json
 import unittest 
 from tests.test_base import BaseTestCase
 
-class TestAuth(BaseTestCase):
+class TestBucketlistItem(BaseTestCase):
 	# Ensure that cannot create a bucketlist without authorization
 	def test_cannot_post_bucketlistitem_without_token(self):
 		self.bucketlistitem = {"item_name" : 'Play guitar',
@@ -18,7 +18,7 @@ class TestAuth(BaseTestCase):
 		output = json.loads(response.data)
 
 		self.assertTrue("Error: You are not authorized to access this resource" in output['message'])
-		self.assertTrue(response.status_code, 403)
+		self.assertTrue(response.status_code, 400)
 
 	# Use token authorization and create a bucketlist
 	def test_post_bucketlist(self):
@@ -32,7 +32,6 @@ class TestAuth(BaseTestCase):
 			headers={'Authorization': 'Token ' + self.token}
 		)
 		output = json.loads(response.data)
-		import pdb; pdb.set_trace()
 		
 		self.assertTrue("You have successfully created a bucketlist item" in output['message'])
 		self.assertTrue(response.status_code, 200)

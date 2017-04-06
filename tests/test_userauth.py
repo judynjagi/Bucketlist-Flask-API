@@ -44,7 +44,7 @@ class TestAuth(BaseTestCase):
 		response = self.client.post('/auth/register', data=json.dumps(self.user), headers={'Content-Type':'application/json'})
 		output = json.loads(response.data)
 
-		self.assertEqual(response.status_code, 401)
+		self.assertEqual(response.status_code, 400)
 		self.assertTrue("Sorry! Passwords do not match" in output["message"])
 
 	# Login a user
@@ -84,7 +84,7 @@ class TestAuth(BaseTestCase):
 		output = json.loads(response.data)
 		
 		self.assertTrue("Incorrect username or password" in output["message"])
-		self.assertEqual(response.status_code, 403)
+		self.assertEqual(response.status_code, 401)
 	
 if __name__ == '__main__':
 	unittest.main()
