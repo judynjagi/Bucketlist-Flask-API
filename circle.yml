@@ -9,6 +9,6 @@ dependencies:
 
 test:
   override:
-    - coverage run --source='.' python.manage.py cov 
+    - coverage run --source='.' python manage.py cov 
   post:
     - coveralls
