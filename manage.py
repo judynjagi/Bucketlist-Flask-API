@@ -5,7 +5,7 @@ import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager, prompt_bool
-from flask_migrate import Migrate, MigrateCommand 
+from flask_migrate import Migrate, MigrateCommand
 
 from bucketlist import app
 from bucketlist.resources.models import db
@@ -14,26 +14,29 @@ COV = coverage.coverage(
         branch=True,
         include='bucketlist/*',
         omit=['*/__init__.py',
-        '*/config/*',
-        'bucketlist/resources/models.py'
-        ]
+              '*/config/*',
+              'bucketlist/resources/models.py'
+              ]
     )
 COV.start()
 
-manager = Manager(app)  
-migrate = Migrate(app, db)  
+manager = Manager(app)
+migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
+
 
 @manager.command
 def createdb(default_data=True, sample_data=False):
-	db.create_all()
-	print("Initialized the database")
+    db.create_all()
+    print("Initialized the database")
+
 
 @manager.command
 def dropdb():
-	if prompt_bool("Are you sure you want to loose all your data?"):
-		db.drop_all()
-		print("Dropped the database")
+    if prompt_bool("Are you sure you want to loose all your data?"):
+        db.drop_all()
+        print("Dropped the database")
+
 
 @manager.command
 def test():
@@ -44,6 +47,7 @@ def test():
         return 0
     else:
         return 1
+
 
 @manager.command
 def cov():
@@ -60,7 +64,6 @@ def cov():
     print('HTML version: file://%s/index.html' % covdir)
     COV.erase()
 
+
 if __name__ == "__main__":
     manager.run()
-
-

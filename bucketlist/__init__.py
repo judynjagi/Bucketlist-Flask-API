@@ -5,13 +5,15 @@ from configsettings.config import config
 
 db = SQLAlchemy()
 
-def create_app(configuration):
-	app = Flask(__name__)
-	app.config.from_object(config[configuration])
-	db.app = app
-	db.init_app(app)
 
-	return app
+def create_app(configuration):
+    app = Flask(__name__)
+    app.config.from_object(config[configuration])
+    db.app = app
+    db.init_app(app)
+
+    return app
+
 
 app = create_app("development")
 api = Api(app=app)

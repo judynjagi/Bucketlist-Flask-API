@@ -1,114 +1,116 @@
 import json
 
-import unittest 
+import unittest
 from tests.test_base import BaseTestCase
 
+
 class TestBucketlistItem(BaseTestCase):
-	# Ensure that cannot create a bucketlist without authorization
-	def test_cannot_post_bucketlistitem_without_token(self):
-		self.bucketlistitem = {"item_name" : 'Play guitar',
-			"description" : 'Join guitar classes'
-			
-		}
-		response = self.client.post('/bucketlists/3/items/', 
-			data=json.dumps(self.bucketlistitem),
-			headers={'Content-Type':'application/json'} 
-		)
+    # Ensure that cannot create a bucketlist without authorization
+    def test_cannot_post_bucketlistitem_without_token(self):
+        self.bucketlistitem = {"item_name": 'Play guitar',
+                               "description": 'Join guitar classes'
 
-		output = json.loads(response.data)
+                               }
+        response = self.client.post('/bucketlists/3/items/',
+                                    data=json.dumps(self.bucketlistitem),
+                                    headers={'Content-Type': 'application/json'}
+                                    )
 
-		self.assertTrue("Error: You are not authorized to access this resource" in output['message'])
-		self.assertTrue(response.status_code, 400)
+        output = json.loads(response.data)
 
-	# Use token authorization and create a bucketlist
-	def test_post_bucketlist(self):
-		self.bucketlistitem = {"item_name" : 'Play guitar',
-			"description" : 'Join guitar classes'
-		}
+        self.assertTrue("Error: You are not authorized to access this resource" in output['message'])
+        self.assertTrue(response.status_code, 400)
 
-		response = self.client.post('/bucketlists/2/items/',
-			data=json.dumps(self.bucketlistitem),
-			content_type='application/json',
-			headers={'Authorization': 'Token ' + self.token}
-		)
-		output = json.loads(response.data)
-		
-		self.assertTrue("You have successfully created a bucketlist item" in output['message'])
-		self.assertTrue(response.status_code, 200)
+    # Use token authorization and create a bucketlist
+    def test_create_bucketlistitem(self):
+        self.bucketlistitem = {"item_name": 'Play guitar',
+                               "description": 'Join guitar classes'
+                               }
 
-	# Create a bucketlistitem where a bucketlist doesn't exist
-	def test_post_bucketlist(self):
-		self.bucketlistitem = {"item_name" : 'Play guitar',
-			"description" : 'Join guitar classes'
-		}
+        response = self.client.post('/bucketlists/2/items/',
+                                    data=json.dumps(self.bucketlistitem),
+                                    content_type='application/json',
+                                    headers={'Authorization': 'Token ' + self.token}
+                                    )
+        output = json.loads(response.data)
 
-		response = self.client.post('/bucketlists/4/items/',
-			data=json.dumps(self.bucketlistitem),
-			content_type='application/json',
-			headers={'Authorization': 'Token ' + self.token}
-		)
-		output = json.loads(response.data)
-		
-		self.assertTrue("That list was not found" in output['message'])
-		self.assertTrue(response.status_code, 200)
+        self.assertTrue("You have successfully created a bucketlist item" in output['message'])
+        self.assertTrue(response.status_code, 200)
 
-	# Update a bucketlistitem
-	def test_update_bucketlistitem(self):
-		self.bucketlistitem = {"item_name" : 'Swim',
-			"description" : 'Join swimming classes',
-			"done": 'False'
-		}
+    # Create a bucketlistitem where a bucketlist doesn't exist
+    def test_create_bucketlistitem_with_nonexistent_bucketlist(self):
+        self.bucketlistitem = {"item_name": 'Play guitar',
+                               "description": 'Join guitar classes'
+                               }
 
-		response = self.client.put('/bucketlists/2/items/1',
-			data=json.dumps(self.bucketlistitem),
-			content_type='application/json',
-			headers={'Authorization': 'Token ' + self.token}
-		)
-	
-		output = json.loads(response.data)
-		
-		self.assertTrue("Successfully updated a bucketlistitem" in output['message'])
-		self.assertTrue(response.status_code, 200)
+        response = self.client.post('/bucketlists/4/items/',
+                                    data=json.dumps(self.bucketlistitem),
+                                    content_type='application/json',
+                                    headers={'Authorization': 'Token ' + self.token}
+                                    )
+        output = json.loads(response.data)
 
-	# Update a bucketlistitem that doesn't exist
-	def test_update_nonexistent_bucketlistitem(self):
-		self.bucketlistitem = {"item_name" : 'Swim',
-			"description" : 'Join swimming classes',
-			"done": 'False'
-		}
+        self.assertTrue("That list was not found" in output['message'])
+        self.assertTrue(response.status_code, 200)
 
-		response = self.client.put('/bucketlists/1/items/1',
-			data=json.dumps(self.bucketlistitem),
-			content_type='application/json',
-			headers={'Authorization': 'Token ' + self.token}
-		)
-	
-		output = json.loads(response.data)
-		
-		self.assertTrue("Bucketlist not found" in output['message'])
-		self.assertTrue(response.status_code, 404)
+    # Update a bucketlistitem
+    def test_update_bucketlistitem(self):
+        self.bucketlistitem = {"item_name": 'Swim',
+                               "description": 'Join swimming classes',
+                               "done": 'False'
+                               }
 
-	# Test delete single bucketlistitem when it doesn't exist
-	def test_delete_nonexistent_bucketlistitem(self):
-		response = self.client.delete('/bucketlists/1/items/4',
-			headers={'Authorization': 'Token ' + self.token}
-		)
+        response = self.client.put('/bucketlists/2/items/1',
+                                   data=json.dumps(self.bucketlistitem),
+                                   content_type='application/json',
+                                   headers={'Authorization': 'Token ' + self.token}
+                                   )
 
-		output = json.loads(response.data)
+        output = json.loads(response.data)
 
-		self.assertTrue('Bucketlist not found' in output['message'])
-		self.assertTrue(response.status_code, 404)
+        self.assertTrue("Successfully updated a bucketlistitem" in output['message'])
+        self.assertTrue(response.status_code, 200)
 
-	# Test delete single bucketlistitem 
-	def test_delete_bucketlistitem(self):
-		response = self.client.delete('/bucketlists/1/items/2',
-			headers={'Authorization': 'Token ' + self.token}
-		)
+    # Update a bucketlistitem that doesn't exist
+    def test_update_nonexistent_bucketlistitem(self):
+        self.bucketlistitem = {"item_name": 'Swim',
+                               "description": 'Join swimming classes',
+                               "done": 'False'
+                               }
 
-		output = json.loads(response.data)
+        response = self.client.put('/bucketlists/1/items/1',
+                                   data=json.dumps(self.bucketlistitem),
+                                   content_type='application/json',
+                                   headers={'Authorization': 'Token ' + self.token}
+                                   )
 
-		self.assertTrue("You have successfully deleted bucketlist with ID:2" in output['message'])
-		self.assertTrue(response.status_code, 200)
+        output = json.loads(response.data)
+
+        self.assertTrue("Bucketlist not found" in output['message'])
+        self.assertTrue(response.status_code, 404)
+
+    # Test delete single bucketlistitem when it doesn't exist
+    def test_delete_nonexistent_bucketlistitem(self):
+        response = self.client.delete('/bucketlists/1/items/4',
+                                      headers={'Authorization': 'Token ' + self.token}
+                                      )
+
+        output = json.loads(response.data)
+
+        self.assertTrue('Bucketlist not found' in output['message'])
+        self.assertTrue(response.status_code, 404)
+
+    # Test delete single bucketlistitem
+    def test_delete_bucketlistitem(self):
+        response = self.client.delete('/bucketlists/1/items/2',
+                                      headers={'Authorization': 'Token ' + self.token}
+                                      )
+
+        output = json.loads(response.data)
+
+        self.assertTrue("You have successfully deleted bucketlist with ID:2" in output['message'])
+        self.assertTrue(response.status_code, 200)
+
 
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()

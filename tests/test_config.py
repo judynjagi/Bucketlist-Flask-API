@@ -1,6 +1,5 @@
 import unittest
 
-from flask import current_app
 from flask_testing import TestCase
 
 from bucketlist import app
@@ -15,7 +14,6 @@ class TestDevelopmentConfig(TestCase):
     def test_app_is_development(self):
         self.assertTrue(app.config['DEBUG'] is True)
         self.assertTrue(app.config['TESTING'] is True)
-    
 
 
 class TestTestingConfig(TestCase):
@@ -42,4 +40,3 @@ class TestProductionConfig(TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

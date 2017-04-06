@@ -1,97 +1,95 @@
 from flask_restful import reqparse, Resource, marshal
-from flask_httpauth import HTTPTokenAuth
-from flask import Flask, request, g
+from flask import g
 
 from bucketlist.resources.models import BucketList, BucketlistItem, db
 from bucketlist.functionalities.serailizer import bucketlist_item_serializer
 from bucketlist.functionalities.permissions import auth
 
+
 class BucketListItems(Resource):
-	decorators = [auth.login_required]
-	def post(self, id):
-		"""
-		Endpoint to create a bucketlist item
-		"""
-		bucket_list = BucketList.query.filter_by(list_id=id,
-			created_by=g.user.user_id).first()
+    decorators = [auth.login_required]
 
-		if bucket_list:
-			parser = reqparse.RequestParser()
-			parser.add_argument('item_name', type=str,
-				required=True,
-				help='Provide a bucketlist item'
-			)
-			parser.add_argument('description', type=str)
-			args = parser.parse_args(strict=True)
-			name, description = args['item_name'], args['description']
+    def post(self, id):
+        """
+        Endpoint to create a bucketlist item
+        """
+        bucket_list = BucketList.query.filter_by(list_id=id,
+                                                 created_by=g.user.user_id).first()
 
-			bucketlistitems = BucketlistItem(item_title=name, item_description=description,
-				bucketlist_id=id,
-				created_by=g.user.user_id,
-				done=False)
-			db.session.add(bucketlistitems)
-			db.session.commit()
-			items = marshal(bucketlistitems, bucketlist_item_serializer)
+        if bucket_list:
+            parser = reqparse.RequestParser()
+            parser.add_argument('item_name', type=str,
+                                required=True,
+                                help='Provide a bucketlist item'
+                                )
+            parser.add_argument('description', type=str)
+            args = parser.parse_args(strict=True)
+            name, description = args['item_name'], args['description']
 
-			return {'message': 'You have successfully created a bucketlist item', 'bucketlistitems': items}, 200
-		return {'message': 'That list was not found'}, 404
+            bucketlistitems = BucketlistItem(item_title=name, item_description=description,
+                                             bucketlist_id=id,
+                                             created_by=g.user.user_id,
+                                             done=False)
+            db.session.add(bucketlistitems)
+            db.session.commit()
+            items = marshal(bucketlistitems, bucketlist_item_serializer)
 
-	def put(self, id, item_id):
-		"""
-		Endpoint to update a bucketlist item
-		"""
+            return {'message': 'You have successfully created a bucketlist item', 'bucketlistitems': items}, 200
+        return {'message': 'That list was not found'}, 404
 
-		bucketlistitem = BucketlistItem.query.filter_by(created_by=g.user.user_id, item_id=item_id, bucketlist_id=id).first()
+    def put(self, id, item_id):
+        """
+        Endpoint to update a bucketlist item
+        """
 
-		if bucketlistitem is None:
-			return {'message': 'Bucketlist not found'}, 404
+        bucketlistitem = BucketlistItem.query.filter_by(created_by=g.user.user_id, item_id=item_id, bucketlist_id=id).first()
 
-		else:
-		
-			parser = reqparse.RequestParser()
-			parser.add_argument('item_name', type=str,
-				required=True,
-				help='Provide a bucketlist item'
-			)
-			parser.add_argument('description', type=str)
-			parser.add_argument('done', type=str, required=True,
-				help='This field takes a True of False value depending on whether you have accomplished it or not ')
+        if bucketlistitem is None:
+            return {'message': 'Bucketlist not found'}, 404
 
-			args = parser.parse_args(strict=True)
-			done, name, description = args['done'], args['item_name'], args['description']
- 
-			if name:
-				bucketlistitem.item_title = name
+        else:
 
-			if description:
-				bucketlistitem.description = description
+            parser = reqparse.RequestParser()
+            parser.add_argument('item_name', type=str,
+                                required=True,
+                                help='Provide a bucketlist item'
+                                )
+            parser.add_argument('description', type=str)
+            parser.add_argument('done', type=str, required=True,
+                                help='This field takes a True of False value depending on whether you have accomplished it or not ')
 
-			if done == 'True' or done == 'true':
-				bucketlistitem.done = True
+            args = parser.parse_args(strict=True)
+            done, name, description = args['done'], args['item_name'], args['description']
 
-			elif done == 'False' or done == 'false':
-				bucketlistitem.done = False
-			# import pdb; pdb.set_trace()
+            if name:
+                bucketlistitem.item_title = name
 
-			bucketlistitem.bucketlist_id = id
-			bucketlistitem.item_id = item_id
+            if description:
+                bucketlistitem.description = description
 
-			db.session.commit()
-			response = marshal(bucketlistitem, bucketlist_item_serializer)
+            if done == 'True' or done == 'true':
+                bucketlistitem.done = True
 
-			return {"bucket_list": response, "message": "Successfully updated a bucketlistitem"}, 200
+            elif done == 'False' or done == 'false':
+                bucketlistitem.done = False
 
+            bucketlistitem.bucketlist_id = id
+            bucketlistitem.item_id = item_id
 
-	def delete(self, id, item_id):
-		"""
-		Endpoint to delete a bucketlist item by its id
-		"""
-		bucketlistitem = BucketlistItem.query.filter_by(created_by=g.user.user_id,
-			item_id=item_id,
-			bucketlist_id=id).first()
-		if bucketlistitem is not None:
-			db.session.delete(bucketlistitem)
-			db.session.commit()
-			return {"message": "You have successfully deleted bucketlist with ID:%s" %item_id}, 200
-		return {'message': 'Bucketlist not found'}, 404
+            db.session.commit()
+            response = marshal(bucketlistitem, bucketlist_item_serializer)
 
+            return {"bucket_list": response, "message": "Successfully updated a bucketlistitem"}, 200
+
+    def delete(self, id, item_id):
+        """
+        Endpoint to delete a bucketlist item by its id
+        """
+        bucketlistitem = BucketlistItem.query.filter_by(created_by=g.user.user_id,
+                                                        item_id=item_id,
+                                                        bucketlist_id=id).first()
+        if bucketlistitem is not None:
+            db.session.delete(bucketlistitem)
+            db.session.commit()
+            return {"message": "You have successfully deleted bucketlist with ID:%s" % item_id}, 200
+        return {'message': 'Bucketlist not found'}, 404

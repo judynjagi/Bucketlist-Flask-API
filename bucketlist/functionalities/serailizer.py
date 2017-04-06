@@ -25,5 +25,3 @@ user_serializer = {
     "id": fields.Integer,
     "username": fields.String
 }
-
-

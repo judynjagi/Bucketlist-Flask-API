@@ -1,6 +1,7 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config(object):
     """ Default configurations """
 
@@ -17,7 +18,6 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "bucketlist.db")
-    
 
 
 class TestingConfig(Config):
@@ -35,10 +35,9 @@ class ProductionConfig(Config):
     TESTING = False
     SQLALCHEMY_DATABASE_URI = "sqlite:///models/bucketlist.db"
 
+
 config = {
     "development": DevelopmentConfig,
     "testing": TestingConfig,
     "production": ProductionConfig
 }
-
-
