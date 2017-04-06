@@ -9,6 +9,6 @@ dependencies:
 
 test:
   override:
-    - coverage run --omit=*/tests/* --source=bucketlist ./manage.py db cov --no-input
+    - coverage run --source='.' python.manage.py cov --no-input
   post:
     - coveralls
