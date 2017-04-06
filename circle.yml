@@ -11,4 +11,6 @@ test:
   override:
     - python manage.py cov 
   post:
+    - coverage run tests/*.py
+    - coverage report
     - coveralls
