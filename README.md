@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/judynjagi/Bucket_list.svg?style=svg)](https://circleci.com/gh/judynjagi/Bucket_list)
+[![CircleCI](https://circleci.com/gh/judynjagi/Bucket_list/tree/develop.svg?style=svg)](https://circleci.com/gh/judynjagi/Bucket_list/tree/develop)
 [![Coverage Status](https://coveralls.io/repos/github/judynjagi/Bucket_list/badge.svg)](https://coveralls.io/github/judynjagi/Bucket_list)
 # `BUCKETLIST` 
 
