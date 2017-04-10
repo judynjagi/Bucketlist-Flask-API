@@ -30,7 +30,7 @@ class TestBucketlistItem(BaseTestCase):
         response = self.client.post('/bucketlists/2/items/',
                                     data=json.dumps(self.bucketlistitem),
                                     content_type='application/json',
-                                    headers={'Authorization': 'Token ' + self.token}
+                                    headers={'Authorization': self.token}
                                     )
         output = json.loads(response.data)
 
@@ -46,7 +46,7 @@ class TestBucketlistItem(BaseTestCase):
         response = self.client.post('/bucketlists/4/items/',
                                     data=json.dumps(self.bucketlistitem),
                                     content_type='application/json',
-                                    headers={'Authorization': 'Token ' + self.token}
+                                    headers={'Authorization': self.token}
                                     )
         output = json.loads(response.data)
 
@@ -63,7 +63,7 @@ class TestBucketlistItem(BaseTestCase):
         response = self.client.put('/bucketlists/2/items/1',
                                    data=json.dumps(self.bucketlistitem),
                                    content_type='application/json',
-                                   headers={'Authorization': 'Token ' + self.token}
+                                   headers={'Authorization': self.token}
                                    )
 
         output = json.loads(response.data)
@@ -81,7 +81,7 @@ class TestBucketlistItem(BaseTestCase):
         response = self.client.put('/bucketlists/1/items/1',
                                    data=json.dumps(self.bucketlistitem),
                                    content_type='application/json',
-                                   headers={'Authorization': 'Token ' + self.token}
+                                   headers={'Authorization': self.token}
                                    )
 
         output = json.loads(response.data)
@@ -92,7 +92,7 @@ class TestBucketlistItem(BaseTestCase):
     # Test delete single bucketlistitem when it doesn't exist
     def test_delete_nonexistent_bucketlistitem(self):
         response = self.client.delete('/bucketlists/1/items/4',
-                                      headers={'Authorization': 'Token ' + self.token}
+                                      headers={'Authorization': self.token}
                                       )
 
         output = json.loads(response.data)
@@ -103,7 +103,7 @@ class TestBucketlistItem(BaseTestCase):
     # Test delete single bucketlistitem
     def test_delete_bucketlistitem(self):
         response = self.client.delete('/bucketlists/1/items/2',
-                                      headers={'Authorization': 'Token ' + self.token}
+                                      headers={'Authorization': self.token}
                                       )
 
         output = json.loads(response.data)

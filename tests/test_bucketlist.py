@@ -29,7 +29,7 @@ class TestBucketList(BaseTestCase):
         response = self.client.post('/bucketlists/',
                                     data=json.dumps(self.bucketlist),
                                     content_type='application/json',
-                                    headers={'Authorization': 'Token ' + self.token}
+                                    headers={'Authorization': self.token}
                                     )
         output = json.loads(response.data)
 
@@ -45,7 +45,7 @@ class TestBucketList(BaseTestCase):
         response = self.client.post('/bucketlists/',
                                     data=json.dumps(self.bucketlist),
                                     content_type='application/json',
-                                    headers={'Authorization': 'Token ' + self.token}
+                                    headers={'Authorization': self.token}
                                     )
         output = json.loads(response.data)
 
@@ -61,7 +61,7 @@ class TestBucketList(BaseTestCase):
         response = self.client.put('/bucketlists/1',
                                    data=json.dumps(self.bucketlist),
                                    content_type='application/json',
-                                   headers={'Authorization': 'Token ' + self.token}
+                                   headers={'Authorization': self.token}
                                    )
         output = json.loads(response.data)
 
@@ -71,7 +71,7 @@ class TestBucketList(BaseTestCase):
     # Prevent accessing a single bucketlist that doesn't exist
     def test_get_nonexistent_bucketlist(self):
         response = self.client.get('/bucketlists/3',
-                                   headers={'Authorization': 'Token ' + self.token}
+                                   headers={'Authorization': self.token}
                                    )
         output = json.loads(response.data)
         self.assertTrue('Error! Could not find the Bucketlist with ID:3' in output['message'])
@@ -80,22 +80,21 @@ class TestBucketList(BaseTestCase):
     # Get a bucketlist by id
     def test_get_single_bucketlist(self):
         response = self.client.get('/bucketlists/1',
-                                   headers={'Authorization': 'Token ' + self.token}
+                                   headers={'Authorization': self.token}
                                    )
         output = json.loads(response.data)
 
-        self.assertTrue('The bucket list requested is ID:1' in output['message'])
+        self.assertTrue('The bucket list requested is ID: 1' in output['message'])
         self.assertTrue(response.status_code, 200)
 
     # Test to get all the bucketlists
     def test_get_all_bucketlists(self):
         response = self.client.get('/bucketlists/',
-                                   headers={'Authorization': 'Token ' + self.token}
+                                   headers={'Authorization': self.token}
                                    )
         output = json.loads(response.data)["bucket_lists"]
         bucketlist1 = output[0]
         bucketlist = bucketlist1.get('list_title')
-        # import pdb; pdb.set_trace()
 
         self.assertEqual(bucketlist, 'Going to the moon')
         self.assertTrue(len(output) == 2)
@@ -103,7 +102,7 @@ class TestBucketList(BaseTestCase):
     # Test delete single bucketlist
     def test_delete_single_bucketlists(self):
         response = self.client.delete('/bucketlists/2',
-                                      headers={'Authorization': 'Token ' + self.token}
+                                      headers={'Authorization': self.token}
                                       )
         output = json.loads(response.data)
 
@@ -113,7 +112,7 @@ class TestBucketList(BaseTestCase):
     # Test delete single bucketlist when it doesn't exist
     def test_delete_nonexistent_bucketlist(self):
         response = self.client.delete('/bucketlists/4',
-                                      headers={'Authorization': 'Token ' + self.token}
+                                      headers={'Authorization': self.token}
                                       )
         output = json.loads(response.data)
 

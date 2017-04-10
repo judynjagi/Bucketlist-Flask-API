@@ -31,11 +31,6 @@ class Users(db.Model):
         S = Serializer('SECRET_KEY', expires_in=expiration)
         return S.dumps({'user_id': self.user_id})
 
-    @validates('email', include_removes=True)
-    def validate_email(self, key, users, is_remove):
-        assert '@' in users
-        return users
-
     @staticmethod
     def verify_auth_token(token):
         s = Serializer('SECRET_KEY')
@@ -61,7 +56,7 @@ class BucketList(db.Model):
     list_title = db.Column(db.String(255))
     list_description = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=datetime.now)
-    date_modified = db.Column(db.DateTime, onupdate=datetime.now)
+    date_modified = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     # This Value is constrained to be  the one of the remote column which is user.id (PK)
     created_by = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     items = db.relationship("BucketlistItem", backref=db.backref("bucketlist"))
@@ -82,7 +77,7 @@ class BucketlistItem(db.Model):
     item_description = db.Column(db.Text)
     done = db.Column(db.Boolean(), default=False)
     date_created = db.Column(db.DateTime, default=datetime.now)
-    date_modified = db.Column(db.DateTime,  onupdate=datetime.now)
+    date_modified = db.Column(db.DateTime,  default=datetime.now, onupdate=datetime.now)
     created_by = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     user = db.relationship("Users", backref=db.backref("items", lazy="dynamic"))
     bucketlist_id = db.Column(db.Integer, db.ForeignKey("bucketlist.list_id"))

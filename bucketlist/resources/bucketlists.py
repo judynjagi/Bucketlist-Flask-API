@@ -2,43 +2,43 @@ from flask_restful import reqparse, Resource, marshal
 from flask import g, request
 
 from bucketlist.resources.models import BucketList, db
-from bucketlist.functionalities.serailizer import bucketlist_serializer
+from bucketlist.functionalities.serializer import bucketlist_serializer
 from bucketlist.functionalities.permissions import auth
 
 
 class BucketListAPI(Resource):
     decorators = [auth.login_required]
 
-    def get(self, id):
+    def get(self, list_id):
         """
         Get a single bucket list selected by list_id
         """
-        bucket_list = BucketList.query.filter_by(list_id=id,
+        bucket_list = BucketList.query.filter_by(list_id=list_id,
                                                  created_by=g.user.user_id).first()
         if bucket_list:
             listrequested = marshal(bucket_list, bucketlist_serializer)
-            return {"listrequested": listrequested, 'message': 'The bucket list requested is ID: %s' % id}, 200
+            return {"listrequested": listrequested, 'message': 'The bucket list requested is ID: %s' % list_id}, 200
         else:
-            return {'message': 'Error! Could not find the Bucketlist with ID:%s' % id}, 404
+            return {'message': 'Error! Could not find the Bucketlist with ID:%s' % list_id}, 404
 
-    def delete(self, id):
+    def delete(self, list_id):
         """
         Delete a single bucket list selected by list_id
         """
-        bucket_list = BucketList.query.filter_by(list_id=id,
+        bucket_list = BucketList.query.filter_by(list_id=list_id,
                                                  created_by=g.user.user_id).first()
-        if bucket_list is not None:
+        if bucket_list:
             db.session.delete(bucket_list)
             db.session.commit()
-            return {"message": "You have successfully deleted bucketlist with ID:%s" % id}, 200
+            return {"message": "You have successfully deleted bucketlist with ID:%s" % list_id}, 200
         return {'message': 'Bucketlist not found'}, 404
 
-    def put(self, id):
+    def put(self, list_id):
         """
         Update a Bucketlist
         """
 
-        bucket_list = BucketList.query.filter_by(list_id=id,
+        bucket_list = BucketList.query.filter_by(list_id=list_id,
                                                  created_by=g.user.user_id).first()
         if bucket_list is None:
             return {'message': 'Bucketlist not found'}, 404
@@ -61,7 +61,7 @@ class BucketListAPI(Resource):
 
         db.session.commit()
 
-        if bucket_list is not None:
+        if bucket_list:
             response = marshal(bucket_list, bucketlist_serializer)
             return {"bucket_list": response, "message": "Bucketlist updated"}, 200
 

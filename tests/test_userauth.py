@@ -17,7 +17,7 @@ class TestAuth(BaseTestCase):
         response = self.client.post('/auth/register', data=json.dumps(self.user), headers={'Content-Type': 'application/json'})
         output = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertTrue("User successfully created" in output["message"])
 
     # Register an existing user

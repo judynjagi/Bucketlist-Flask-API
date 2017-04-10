@@ -1,5 +1,5 @@
 from sqlalchemy.exc import IntegrityError
-from flask_restful import reqparse, Resource
+from flask_restful import reqparse, Resource, inputs
 
 from bucketlist.resources.models import Users, db
 from bucketlist.functionalities.permissions import unauthorized
@@ -16,9 +16,9 @@ class Register(Resource):
                             required=True,
                             help='Provide a username')
         parser.add_argument('email',
-                            type=str,
+                            type=inputs.regex(r"[^@]+@[^@]+\.[^@]+"),
                             required=True,
-                            help='You must provide a valid email address')
+                            help='You must provide a valid email address eg. username@example.com')
         parser.add_argument('password',
                             type=str,
                             required=True,
@@ -40,7 +40,7 @@ class Register(Resource):
             if password == verify_password:
                 db.session.add(new_user)
                 db.session.commit()
-                return {'message': 'User successfully created', 'Username': '%s.' % username, 'email address': ' %s ' % email}, 200
+                return {'message': 'User successfully created', 'Username': '%s.' % username, 'email address': ' %s ' % email}, 201
             return {'message': 'Sorry! Passwords do not match'}, 400
 
         except (IntegrityError, AssertionError):
@@ -70,12 +70,11 @@ class Login(Resource):
             user = Users.query.filter_by(username=username).first()
         else:
             return {'message': 'A username and password must be provided'}
-        # import pdb; pdb.set_trace()
 
         # Authenticate with username and password
         if user and user.verify_password(password):
             token = user.generate_auth_token(36000)
-            return {'message': 'Successfully logged in. This is your  token', 'token': token.decode('ascii'), 'duration': 36000}, 200
+            return {'message': 'Successfully logged in. This is your  token', 'token': 'Token' + ' ' + token.decode('ascii'), 'duration': 36000}, 200
 
         else:
             return unauthorized("Incorrect username or password.")
